@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Груповий розбір | Ілона Солдатюк</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Playfair Display (Serif) & Manrope (Sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Intl-Tel-Input CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#1a1614',     /* Основной темный */
+                            accent: '#c48b76',   /* Терракотовый акцент */
+                            light: '#e8e0d5',    /* Светлый текст */
+                            gray: '#2e2a28'      /* Фон полей ввода */
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Manrope"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #1a1614;
+            color: #e8e0d5;
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* --- STYLING INPUTS (Dark Mode for Intl-Tel-Input) --- */
+        .iti { width: 100%; }
+        .iti__dropdown-content { 
+            background-color: #2e2a28 !important; 
+            border: 1px solid #444 !important; 
+            color: #fff !important; 
+        }
+        .iti__country-list { 
+            background-color: #2e2a28 !important; 
+            scrollbar-width: thin;
+            scrollbar-color: #c48b76 #2e2a28;
+        }
+        .iti__country-name { color: #e8e0d5; }
+        .iti__dial-code { color: #9ca3af; }
+        
+        /* --- ANIMATIONS --- */
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* Loader */
+        .loader {
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top: 2px solid #fff;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Scrollbar for Modal */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1f1b19; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c48b76; border-radius: 4px; }
+    </style>
+
+    <!-- Meta Pixel Code -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        
+        // ВСТАВЬ СЮДА СВОЙ ID ПИКСЕЛЯ
+        fbq('init', 'YOUR_PIXEL_ID'); 
+        fbq('track', 'PageView');
+    </script>
+    <!-- End Meta Pixel Code -->
+</head>
+<body class="antialiased min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden">
+
+    <!-- === BACKGROUND LAYERS === -->
+    
+    <!-- 1. Изображение (fon1.jpg) -->
+    <div class="fixed inset-0 -z-30">
+        <!-- opacity-50: Регулируй прозрачность картинки (от 0 до 100), чтобы текст читался -->
+        <img src="fon1.jpg" alt="Atmosphere" class="w-full h-full object-cover opacity-50 blur-[2px] scale-105">
+    </div>
+
+    <!-- 2. Темная подложка (Gradient Overlay) -->
+    <!-- Делает верх и низ темнее, центр чуть светлее -->
+    <div class="fixed inset-0 bg-gradient-to-b from-[#1a1614] via-[#1a1614]/80 to-[#1a1614] -z-20 pointer-events-none"></div>
+
+    <!-- 3. Декоративное свечение (Glow) -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-brand-accent/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-brand-accent/5 rounded-full blur-[100px]"></div>
+    </div>
+
+
+    <!-- === MAIN CONTENT (Block 1) === -->
+    <main class="w-full max-w-lg px-6 py-10 text-center flex flex-col items-center gap-6 md:gap-8 fade-in relative z-10">
+        
+        <!-- Date Tag -->
+        <div class="border border-white/20 bg-black/20 backdrop-blur-md px-5 py-2 rounded-full inline-block shadow-lg">
+            <span class="text-[11px] md:text-xs tracking-[0.2em] uppercase text-brand-accent font-bold">
+                21 ЛЮТОГО | ОНЛАЙН
+            </span>
+        </div>
+
+        <!-- Headline -->
+        <div class="space-y-3">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/70">Груповий розбір</p>
+            <h1 class="text-[28px] md:text-[38px] leading-[1.2] font-serif italic text-white drop-shadow-xl">
+                Як перестати бути хорошою дівчинкою, <span class="text-brand-accent not-italic border-b border-brand-accent/30 pb-1">повернути самоцінність</span> і почати жити заради себе
+            </h1>
+        </div>
+
+        <!-- Sub-headline -->
+        <p class="text-white/90 font-light leading-relaxed text-sm md:text-base max-w-md drop-shadow-md">
+            Груповий розбір стосунків, після якого перестанеш тягнути все на собі і знову відчуєш себе собою.
+        </p>
+
+        <!-- Speaker Badge -->
+        <div class="flex items-center gap-4 bg-white/5 backdrop-blur-sm border border-white/10 pr-6 pl-2 py-2 rounded-full">
+             <div class="w-10 h-10 rounded-full bg-brand-accent flex items-center justify-center text-[#1a1614] shadow-[0_0_15px_rgba(196,139,118,0.4)]">
+                <i data-lucide="mic" class="w-5 h-5"></i>
+             </div>
+             <div class="text-left">
+                 <p class="text-[9px] text-white/50 uppercase tracking-wide">Розбір проводить:</p>
+                 <p class="font-serif text-base text-white">Ілона Солдатюк</p>
+             </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-brand-accent/60 to-transparent my-1"></div>
+
+        <!-- CTA Area -->
+        <div class="w-full space-y-4">
+            <p class="text-xs md:text-sm text-white/70">
+                Щоб прийняти участь — зареєструйся.<br>Місць обмежено.
+            </p>
+            
+            <button onclick="openModal()" class="w-full bg-brand-accent hover:bg-[#b07661] text-white font-semibold py-4 px-8 rounded-sm tracking-[0.15em] uppercase transition-all duration-300 shadow-[0_10px_30px_-10px_rgba(196,139,118,0.5)] transform hover:scale-[1.02] border-t border-white/20 relative overflow-hidden group">
+                <span class="relative z-10">Зареєструватися</span>
+                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            </button>
+            
+            <p class="text-[10px] text-white/40 uppercase tracking-widest">
+                участь безкоштовна
+            </p>
+        </div>
+    </main>
+
+
+    <!-- === MODAL (Block 2 - Questionnaire) === -->
+    <div id="modal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300" onclick="closeModal()"></div>
+        
+        <!-- Modal Panel -->
+        <div class="absolute inset-x-0 bottom-0 md:top-1/2 md:bottom-auto md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-[480px] h-[85vh] md:h-auto md:max-h-[90vh] bg-[#1f1b19] border-t md:border border-white/10 rounded-t-2xl md:rounded-xl shadow-2xl flex flex-col transition-all duration-300 transform translate-y-full md:translate-y-10 scale-95 opacity-0" id="modal-panel">
+            
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-white/5 flex justify-between items-center shrink-0 bg-[#25211f] rounded-t-2xl md:rounded-t-xl">
+                <div>
+                    <h3 class="font-serif text-lg text-white tracking-wide">Анкета учасника</h3>
+                    <p class="text-[11px] text-white/40 mt-0.5">Всі поля обов'язкові для заповнення</p>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Form Container -->
+            <div class="p-5 md:p-6 overflow-y-auto custom-scrollbar flex-1">
+                <form id="leadForm" class="space-y-5">
+                    
+                    <!-- Input: Name -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] uppercase tracking-wider text-brand-accent font-bold">1. Твоє ім’я</label>
+                        <input type="text" name="name" required placeholder="Як до вас звертатись?" 
+                        class="w-full bg-brand-gray border border-white/10 rounded-sm px-4 py-3.5 text-white text-sm focus:outline-none focus:border-brand-accent transition-colors placeholder:text-white/20 shadow-inner">
+                    </div>
+
+                    <!-- Input: Phone -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] uppercase tracking-wider text-brand-accent font-bold">2. Номер телефону</label>
+                        <input type="tel" id="phone" name="phone" required 
+                        class="w-full bg-brand-gray border border-white/10 rounded-sm px-4 py-3.5 text-white text-sm focus:outline-none focus:border-brand-accent transition-colors shadow-inner">
+                        <div class="h-4 flex items-center">
+                            <span id="valid-msg" class="text-[10px] text-green-400 hidden flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> Номер вірний</span>
+                            <span id="error-msg" class="text-[10px] text-red-400 hidden"></span>
+                        </div>
+                    </div>
+
+                    <!-- Input: Telegram -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] uppercase tracking-wider text-brand-accent font-bold">3. Нік у Telegram</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 text-sm">@</span>
+                            <input type="text" name="telegram" required placeholder="username" 
+                            class="w-full bg-brand-gray border border-white/10 rounded-sm pl-9 pr-4 py-3.5 text-white text-sm focus:outline-none focus:border-brand-accent transition-colors placeholder:text-white/20 shadow-inner">
+                        </div>
+                    </div>
+
+                    <!-- Input: Situation -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] uppercase tracking-wider text-brand-accent font-bold">4. Яка ситуація зараз?</label>
+                        <textarea name="situation" rows="3" placeholder="Наприклад: тягну все на собі, немає близькості, відчуваю себе мамою..." 
+                        class="w-full bg-brand-gray border border-white/10 rounded-sm px-4 py-3 text-white text-sm focus:outline-none focus:border-brand-accent transition-colors placeholder:text-white/20 shadow-inner leading-relaxed"></textarea>
+                    </div>
+
+                    <!-- Checkbox -->
+                    <div class="flex items-start gap-3 pt-1 p-3 bg-white/5 rounded-sm border border-white/5">
+                        <div class="flex items-center h-5">
+                            <input id="case-study" name="case_study" type="checkbox" class="w-4 h-4 rounded border-brand-accent/50 bg-brand-gray text-brand-accent focus:ring-brand-accent focus:ring-offset-[#1a1614] cursor-pointer">
+                        </div>
+                        <div class="text-xs leading-tight">
+                            <label for="case-study" class="text-white/80 cursor-pointer select-none">Хочу, щоб мій кейс розібрали на ефірі</label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submitBtn" class="w-full bg-brand-accent hover:bg-[#b07661] text-white font-bold py-4 rounded-sm uppercase tracking-widest mt-2 transition-all flex justify-center items-center gap-3 shadow-lg active:scale-[0.98]">
+                        <span>Заповнити анкету</span>
+                        <div class="loader"></div>
+                    </button>
+                    
+                    <p class="text-[9px] text-center text-white/20">
+                        Натискаючи кнопку, ви погоджуєтесь з обробкою персональних даних.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- === JAVASCRIPT LOGIC === -->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+    <script>
+        // --- 1. SETTINGS (EDIT HERE) ---
+        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL'; // Ссылка из Google Apps Script
+        const TELEGRAM_BOT_URL = 'YOUR_BOT_LINK';           // Ссылка на бот (t.me/...)
+
+        // --- 2. INITIALIZATION ---
+        lucide.createIcons();
+        
+        // --- 3. MODAL CONTROLS ---
+        const modal = document.getElementById('modal');
+        const modalPanel = document.getElementById('modal-panel');
+        
+        function openModal() {
+            modal.classList.remove('hidden');
+            // Small delay to allow display:block to apply before transition
+            setTimeout(() => {
+                modalPanel.classList.remove('translate-y-full', 'scale-95', 'opacity-0');
+                modalPanel.classList.add('translate-y-0', 'md:translate-y-0', 'scale-100', 'opacity-100');
+            }, 20);
+            fbq('track', 'InitiateCheckout'); // Meta Pixel Event
+        }
+
+        function closeModal() {
+            modalPanel.classList.remove('translate-y-0', 'md:translate-y-0', 'scale-100', 'opacity-100');
+            modalPanel.classList.add('translate-y-full', 'scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // Matches transition duration
+        }
+
+        // --- 4. PHONE VALIDATION & MASKING ---
+        const input = document.querySelector("#phone");
+        const errorMsg = document.querySelector("#error-msg");
+        const validMsg = document.querySelector("#valid-msg");
+
+        // Auto-detect country by IP
+        const getCountry = (callback) => {
+            fetch('https://get.geojs.io/v1/ip/country.json')
+                .then(res => res.json())
+                .then(data => callback(data.country))
+                .catch(() => callback('ua'));
+        };
+
+        const iti = window.intlTelInput(input, {
+            initialCountry: "auto",
+            geoIpLookup: getCountry,
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+            separateDialCode: true,
+            allowDropdown: true,
+            preferredCountries: ["ua", "pl", "de", "gb", "us"]
+        });
+
+        const reset = () => {
+            input.classList.remove("border-red-500", "border-green-500");
+            errorMsg.classList.add("hidden");
+            validMsg.classList.add("hidden");
+        };
+
+        // Real-time Validation on Blur
+        input.addEventListener('blur', () => {
+            reset();
+            if (input.value.trim()) {
+                if (iti.isValidNumber()) {
+                    validMsg.classList.remove("hidden");
+                    input.classList.add("border-green-500");
+                    lucide.createIcons(); // Refresh icons
+                } else {
+                    input.classList.add("border-red-500");
+                    const errorCode = iti.getValidationError();
+                    errorMsg.innerHTML = "Невірний формат номеру"; // Simplified error
+                    errorMsg.classList.remove("hidden");
+                }
+            }
+        });
+
+        input.addEventListener('change', reset);
+        input.addEventListener('keyup', reset);
+
+
+        // --- 5. FORM SUBMISSION ---
+        const form = document.getElementById('leadForm');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Final validation check before send
+            if (!iti.isValidNumber()) {
+                input.classList.add("border-red-500");
+                errorMsg.innerHTML = "Перевірте номер телефону";
+                errorMsg.classList.remove("hidden");
+                input.focus();
+                return;
+            }
+
+            // UI Loading State
+            const btn = document.getElementById('submitBtn');
+            const btnText = btn.querySelector('span');
+            const loader = btn.querySelector('.loader');
+
+            btn.disabled = true;
+            btnText.textContent = "Обробка...";
+            loader.style.display = "block";
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            // Collect Data
+            const formData = new FormData(form);
+            const params = new URLSearchParams(window.location.search);
+            
+            const data = {
+                name: formData.get('name'),
+                phone: iti.getNumber(), // Full number with country code
+                telegram: formData.get('telegram'),
+                situation: formData.get('situation'),
+                case_study: formData.get('case_study') ? 'Yes' : 'No',
+                utm_source: params.get('utm_source') || '',
+                utm_medium: params.get('utm_medium') || '',
+                utm_campaign: params.get('utm_campaign') || '',
+                utm_content: params.get('utm_content') || '',
+                utm_term: params.get('utm_term') || ''
+            };
+
+            // Send to Backend
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                // Success
+                fbq('track', 'Lead'); // Fire Pixel
+                window.location.href = TELEGRAM_BOT_URL;
+            })
+            .catch(error => {
+                // Error (Fallback to bot anyway to not lose lead)
+                console.error('Error:', error);
+                window.location.href = TELEGRAM_BOT_URL;
+            });
+        });
+    </script>
+</body>
+</html>
