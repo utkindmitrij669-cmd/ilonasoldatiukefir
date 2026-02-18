@@ -24,8 +24,9 @@
                     colors: {
                         brand: {
                             dark: '#1a1614',
-                            accent: '#c48b76',
+                            accent: '#c48b76',   /* Цвет кнопки */
                             light: '#e8e0d5',
+                            textHighlight: '#ffdcb8', /* Новый более светлый цвет для текста */
                             gray: '#2e2a28'
                         }
                     },
@@ -91,27 +92,31 @@
         <img src="fon1.jpg" alt="Background" class="w-full h-full object-cover">
     </div>
 
-    <!-- Затемнение -->
-    <div class="fixed inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#1a1614]/95 -z-20 pointer-events-none"></div>
+    <!-- Общее затемнение фона -->
+    <div class="fixed inset-0 bg-black/20 -z-20 pointer-events-none"></div>
 
     <!-- === HEADER (ДАТА ВВЕРХУ) === -->
     <div class="absolute top-8 left-0 right-0 text-center z-20 fade-in">
-         <div class="border border-white/30 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full inline-block shadow-lg">
-            <span class="text-xs tracking-[0.2em] uppercase text-brand-accent font-bold">
+         <div class="border border-white/30 bg-black/40 backdrop-blur-md px-6 py-2 rounded-full inline-block shadow-lg">
+            <span class="text-xs tracking-[0.2em] uppercase text-brand-textHighlight font-bold">
                 21 ЛЮТОГО | ОНЛАЙН
             </span>
         </div>
     </div>
 
     <!-- === MAIN CONTENT (ТЕКСТ ВНИЗУ) === -->
-    <main class="w-full max-w-lg px-5 pb-8 pt-4 text-center flex flex-col items-center gap-4 z-10 fade-in bg-gradient-to-t from-[#1a1614] via-[#1a1614]/70 to-transparent">
+    <!-- Усилил градиент снизу (via-[#1a1614]/90), чтобы текст читался лучше -->
+    <main class="w-full max-w-lg px-5 pb-8 pt-12 text-center flex flex-col items-center gap-4 z-10 fade-in bg-gradient-to-t from-[#1a1614] via-[#1a1614]/90 to-transparent">
         
         <!-- Headline -->
         <div class="space-y-2">
-            <p class="text-[10px] uppercase tracking-[0.25em] text-white/80 font-medium">Груповий розбір</p>
-            <!-- ОБНОВЛЕННЫЙ ЗАГОЛОВОК -->
+            <p class="text-[10px] uppercase tracking-[0.25em] text-white/80 font-medium drop-shadow-md">Груповий розбір</p>
+            
             <h1 class="text-[26px] md:text-[36px] leading-[1.2] font-serif italic text-white drop-shadow-xl">
-                Перестала бути жінкою у стосунках: <span class="text-brand-accent not-italic">як повернути легкість та жіночність,</span> коли тягнеш усе на собі
+                Перестала бути жінкою у стосунках: 
+                <!-- Используем более светлый цвет textHighlight (#ffdcb8) -->
+                <span class="text-brand-textHighlight not-italic drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">як повернути легкість та жіночність,</span> 
+                коли тягнеш усе на собі
             </h1>
         </div>
 
@@ -160,7 +165,8 @@
                     
                     <div class="space-y-1">
                         <label class="text-[10px] uppercase tracking-wider text-brand-accent font-bold">1. Твоє ім’я</label>
-                        <input type="text" name="name" required placeholder="Як до вас звертатись?" 
+                        <!-- ИЗМЕНЕН ПЛЕЙСХОЛДЕР -->
+                        <input type="text" name="name" required placeholder="Як до тебе звертатись?" 
                         class="w-full bg-brand-gray border border-white/10 rounded-sm px-4 py-3 text-white text-sm focus:outline-none focus:border-brand-accent transition-colors shadow-inner">
                     </div>
 
